@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AMDC — Consultas Públicas
 
-## Getting Started
+Portal público para consultar Estados de Cuenta de Bienes Inmuebles (EC) y Industria/Comercio (ICS) de la Alcaldía Municipal del Distrito Central, sin requerir registro.
 
-First, run the development server:
+> **Plan maestro**: ver `../planpublic.md` en el monorepo. Toda decisión, contrato de API, schema de BD y fases de implementación viven ahí.
+
+## Stack
+
+- Next.js 15 (App Router)
+- shadcn/ui (Radix base) + Tailwind CSS 4
+- GSAP + @gsap/react para animaciones
+- React Hook Form + Zod
+- Cloudflare Turnstile (`@marsidev/react-turnstile`)
+- Backend: NestJS en `mer-fact-back` (endpoints `/api/public/*`)
+
+## Setup local
 
 ```bash
+cp .env.local.example .env.local
+# rellenar NEXT_PUBLIC_TURNSTILE_SITE_KEY desde Cloudflare dashboard
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App en `http://localhost:3000`. Backend tiene que estar corriendo en `http://localhost:3009`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Producción
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deploy en Vercel apuntando `estadosdecuenta.amdc.hn`. Variables de entorno se configuran en el dashboard.
 
-## Learn More
+## Privacidad
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Las respuestas y PDFs **NO** incluyen nombres, apellidos, DNI/RTN ni número de cuenta del contribuyente. Solo se exponen: clave catastral / código ICS, colonia, uso, avalúo, tabla por años, totales.

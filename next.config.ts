@@ -5,6 +5,10 @@ const isProd = process.env.NODE_ENV === "production";
 // CSP: aliasa los dominios externos que el browser realmente toca.
 // El backend NestJS NO va aquí — el browser solo habla con same-origin
 // (`/api/consulta`, `/api/pdf`); la conexión al backend es server-side.
+//
+// Nota: NO incluimos `upgrade-insecure-requests` — nginx maneja el redirect
+// HTTP→HTTPS para el dominio público. Esa directiva además rompía el
+// testing directo por IP+puerto (forzaba HTTPS sobre 192.168.x:3006 sin TLS).
 const cspDirectives = [
   `default-src 'self'`,
   // Next 16 inyecta scripts inline para hidratación; en dev también HMR.
@@ -19,7 +23,6 @@ const cspDirectives = [
   `base-uri 'self'`,
   `object-src 'none'`,
   `manifest-src 'self'`,
-  isProd ? `upgrade-insecure-requests` : "",
 ]
   .filter(Boolean)
   .join("; ");

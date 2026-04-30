@@ -57,9 +57,8 @@ export function PdfDownloadButton({ query }: PdfDownloadButtonProps) {
   async function handleDownload() {
     if (loading) return;
     if (!token) {
-      toast.info(
-        "Estamos validando tu identidad. Espera un momento e intenta nuevamente.",
-      );
+      // El boton DEBERIA estar disabled si no hay token; este check es solo
+      // por si el evento se dispara desde teclado o accesibilidad.
       turnstileRef.current?.execute();
       return;
     }
@@ -115,13 +114,19 @@ export function PdfDownloadButton({ query }: PdfDownloadButtonProps) {
         type="button"
         size="lg"
         onClick={handleDownload}
-        disabled={loading}
-        className="h-12 gap-2 rounded-full bg-[color:var(--gold-500)] px-6 text-base font-semibold text-[color:var(--brand-900)] shadow-sm transition-colors hover:bg-[color:var(--gold-300)] disabled:opacity-70"
+        disabled={loading || !token}
+        aria-busy={loading || !token}
+        className="h-12 gap-2 rounded-full bg-[color:var(--gold-500)] px-6 text-base font-semibold text-[color:var(--brand-900)] shadow-sm transition-colors hover:bg-[color:var(--gold-300)] disabled:cursor-not-allowed disabled:bg-[color:var(--gold-500)]/40 disabled:opacity-90"
       >
         {loading ? (
           <>
             <Loader2 className="size-4 animate-spin" />
             Generando PDF…
+          </>
+        ) : !token ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Validando seguridad…
           </>
         ) : (
           <>
@@ -141,8 +146,9 @@ export function PdfDownloadButton({ query }: PdfDownloadButtonProps) {
           onExpire={() => setToken(null)}
         />
         <p className="text-xs text-muted-foreground">
-          Cada descarga emite un nuevo PDF con un código de validación QR
-          único.
+          {!token && !loading
+            ? "Verificando con Cloudflare Turnstile antes de habilitar la descarga…"
+            : "Cada descarga emite un nuevo PDF con un código de validación QR único."}
         </p>
       </div>
     </div>

@@ -100,11 +100,12 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
     router.push("/resultado");
   }
 
+  // Si por alguna razón se dispara submit sin token (Enter en el form
+  // antes de que Turnstile termine), simplemente no hacemos nada y dejamos
+  // que el widget complete su validación. El usuario verá que el boton sigue
+  // mostrando "Validando..."
   function ensureToken() {
     if (!token) {
-      toast.error(
-        "Estamos validando que eres una persona. Espera un momento e intenta de nuevo.",
-      );
       turnstileRef.current?.execute();
       return false;
     }
@@ -300,7 +301,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
                 </Alert>
               )}
 
-              <SubmitArea submitting={submitting} />
+              <SubmitArea submitting={submitting} tokenReady={!!token} />
             </form>
           </TabsContent>
 
@@ -354,7 +355,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
                 </Alert>
               )}
 
-              <SubmitArea submitting={submitting} />
+              <SubmitArea submitting={submitting} tokenReady={!!token} />
             </form>
           </TabsContent>
         </Tabs>
@@ -431,25 +432,47 @@ function FieldRow({
   );
 }
 
-function SubmitArea({ submitting }: { submitting: boolean }) {
+function SubmitArea({
+  submitting,
+  tokenReady,
+}: {
+  submitting: boolean;
+  tokenReady: boolean;
+}) {
+  const disabled = submitting || !tokenReady;
+
   return (
-    <Button
-      type="submit"
-      size="lg"
-      disabled={submitting}
-      className="group/btn mt-3 h-12 w-full gap-2 rounded-full bg-[color:var(--brand-700)] text-[15px] font-semibold tracking-tight text-white shadow-sm transition-all hover:bg-[color:var(--brand-900)] hover:shadow-md sm:w-auto sm:px-10"
-    >
-      {submitting ? (
-        <>
-          <Loader2 className="size-4 animate-spin" />
-          Consultando…
-        </>
-      ) : (
-        <>
-          Consultar estado de cuenta
-          <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-0.5" />
-        </>
+    <div className="space-y-2">
+      <Button
+        type="submit"
+        size="lg"
+        disabled={disabled}
+        aria-busy={submitting || !tokenReady}
+        className="group/btn mt-3 h-12 w-full gap-2 rounded-full bg-[color:var(--brand-700)] text-[15px] font-semibold tracking-tight text-white shadow-sm transition-all hover:bg-[color:var(--brand-900)] hover:shadow-md disabled:cursor-not-allowed disabled:bg-[color:var(--brand-500)]/40 disabled:text-white/85 disabled:shadow-none sm:w-auto sm:px-10"
+      >
+        {submitting ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Consultando…
+          </>
+        ) : !tokenReady ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Validando seguridad…
+          </>
+        ) : (
+          <>
+            Consultar estado de cuenta
+            <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-0.5" />
+          </>
+        )}
+      </Button>
+      {!tokenReady && !submitting && (
+        <p className="text-xs leading-relaxed text-ink-soft/80">
+          Estamos verificando que eres una persona con Cloudflare Turnstile.
+          Esto toma unos segundos.
+        </p>
       )}
-    </Button>
+    </div>
   );
 }

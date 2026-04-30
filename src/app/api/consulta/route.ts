@@ -29,22 +29,23 @@ function clientIp(req: NextRequest): string {
 
 /**
  * Exige same-origin en POSTs hacia el proxy: si el browser envía Origin y
- * no coincide con el host del request, devolvemos 403. El browser pone
+ * el hostname no coincide con el del request, devolvemos 403. El browser pone
  * Origin automáticamente en POSTs cross-site, así que esto bloquea CSRF.
  *
- * Detrás de nginx la conexión interna es HTTP pero el browser viene por
- * HTTPS, así que reconstruimos el origin esperado desde X-Forwarded-Proto
- * y Host (los settea nginx con proxy_set_header).
+ * Comparamos solo HOSTNAME (no protocolo ni puerto) para tolerar el chain
+ * típico Cloudflare → WAF → nginx → Next.js, donde el protocolo cambia entre
+ * hops (HTTPS público vs HTTP interno) y los puertos también difieren.
+ * Para CSRF, hostname matching es suficiente: el browser jamás permitiría a
+ * un script de evil.com forjar Origin: estadosdecuenta.amdc.hn.
  */
 function enforceSameOrigin(req: NextRequest) {
   const origin = req.headers.get("origin");
   if (!origin) return null;
   try {
-    const fwdProto = req.headers.get("x-forwarded-proto");
-    const host = req.headers.get("host") ?? new URL(req.url).host;
-    const proto = fwdProto ?? new URL(req.url).protocol.replace(":", "");
-    const expectedOrigin = `${proto}://${host}`;
-    if (new URL(origin).origin !== expectedOrigin) {
+    const originHostname = new URL(origin).hostname;
+    const hostHeader = req.headers.get("host") ?? new URL(req.url).host;
+    const expectedHostname = hostHeader.split(":")[0];
+    if (originHostname !== expectedHostname) {
       return jsonError(
         403,
         "validation",

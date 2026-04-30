@@ -31,13 +31,20 @@ function clientIp(req: NextRequest): string {
  * Exige same-origin en POSTs hacia el proxy: si el browser envía Origin y
  * no coincide con el host del request, devolvemos 403. El browser pone
  * Origin automáticamente en POSTs cross-site, así que esto bloquea CSRF.
+ *
+ * Detrás de nginx la conexión interna es HTTP pero el browser viene por
+ * HTTPS, así que reconstruimos el origin esperado desde X-Forwarded-Proto
+ * y Host (los settea nginx con proxy_set_header).
  */
 function enforceSameOrigin(req: NextRequest) {
   const origin = req.headers.get("origin");
   if (!origin) return null;
   try {
-    const reqOrigin = new URL(req.url).origin;
-    if (new URL(origin).origin !== reqOrigin) {
+    const fwdProto = req.headers.get("x-forwarded-proto");
+    const host = req.headers.get("host") ?? new URL(req.url).host;
+    const proto = fwdProto ?? new URL(req.url).protocol.replace(":", "");
+    const expectedOrigin = `${proto}://${host}`;
+    if (new URL(origin).origin !== expectedOrigin) {
       return jsonError(
         403,
         "validation",

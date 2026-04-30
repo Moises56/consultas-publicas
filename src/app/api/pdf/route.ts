@@ -28,8 +28,11 @@ function enforceSameOrigin(req: NextRequest) {
   const origin = req.headers.get("origin");
   if (!origin) return null;
   try {
-    const reqOrigin = new URL(req.url).origin;
-    if (new URL(origin).origin !== reqOrigin) {
+    const fwdProto = req.headers.get("x-forwarded-proto");
+    const host = req.headers.get("host") ?? new URL(req.url).host;
+    const proto = fwdProto ?? new URL(req.url).protocol.replace(":", "");
+    const expectedOrigin = `${proto}://${host}`;
+    if (new URL(origin).origin !== expectedOrigin) {
       return jsonError(
         403,
         "validation",

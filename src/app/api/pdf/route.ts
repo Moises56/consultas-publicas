@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { proxyPayloadSchema } from "@/lib/schemas";
+import { pdfProxyPayloadSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     return jsonError(400, "validation", "Solicitud inválida.");
   }
 
-  const parsed = proxyPayloadSchema.safeParse(body);
+  const parsed = pdfProxyPayloadSchema.safeParse(body);
   if (!parsed.success) {
     return jsonError(
       400,

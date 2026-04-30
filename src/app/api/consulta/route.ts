@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { proxyPayloadSchema } from "@/lib/schemas";
+import { consultaProxyPayloadSchema } from "@/lib/schemas";
 import type { ApiErrorResponse } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     return jsonError(400, "validation", "Solicitud inválida.");
   }
 
-  const parsed = proxyPayloadSchema.safeParse(body);
+  const parsed = consultaProxyPayloadSchema.safeParse(body);
   if (!parsed.success) {
     return jsonError(
       400,
@@ -103,7 +103,6 @@ export async function POST(req: NextRequest) {
       method: "GET",
       headers: {
         accept: "application/json",
-        "x-turnstile-token": payload.token,
         ...(ip ? { "x-forwarded-for": ip } : {}),
         "user-agent": req.headers.get("user-agent") ?? "amdc-consultas-publicas",
         origin: browserOrigin,

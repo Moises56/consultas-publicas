@@ -49,7 +49,30 @@ export const consultaICSSchema = z
 
 export type ConsultaICSInput = z.infer<typeof consultaICSSchema>;
 
-export const proxyPayloadSchema = z.discriminatedUnion("tipo", [
+/**
+ * Schema para /api/consulta (search) — SIN token Turnstile.
+ * El search está protegido por OriginGuard + BotBlockerGuard + rate-limit
+ * en el backend; no requiere captcha para evitar UX de doble desafío.
+ */
+export const consultaProxyPayloadSchema = z.discriminatedUnion("tipo", [
+  z.object({
+    tipo: z.literal("ec"),
+    claveCatastral: z.string().optional(),
+    dni: z.string().optional(),
+  }),
+  z.object({
+    tipo: z.literal("ics"),
+    ics: z.string().optional(),
+    dni: z.string().optional(),
+  }),
+]);
+
+export type ConsultaProxyPayload = z.infer<typeof consultaProxyPayloadSchema>;
+
+/**
+ * Schema para /api/pdf — CON token Turnstile (operación costosa).
+ */
+export const pdfProxyPayloadSchema = z.discriminatedUnion("tipo", [
   z.object({
     tipo: z.literal("ec"),
     token: z.string().min(1),
@@ -64,4 +87,4 @@ export const proxyPayloadSchema = z.discriminatedUnion("tipo", [
   }),
 ]);
 
-export type ProxyPayload = z.infer<typeof proxyPayloadSchema>;
+export type PdfProxyPayload = z.infer<typeof pdfProxyPayloadSchema>;

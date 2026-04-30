@@ -1,8 +1,8 @@
 import type { ApiResponse, PublicEstadoCuenta } from "./types";
-import type { ProxyPayload } from "./schemas";
+import type { ConsultaProxyPayload } from "./schemas";
 
 export async function consultarEstadoCuenta(
-  payload: ProxyPayload,
+  payload: ConsultaProxyPayload,
 ): Promise<ApiResponse<PublicEstadoCuenta>> {
   try {
     const res = await fetch("/api/consulta", {

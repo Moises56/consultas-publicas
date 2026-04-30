@@ -1,8 +1,10 @@
 import { z } from "zod";
 
 const claveCatastralRegex = /^[0-9]{2}-[0-9]{4}-[0-9]{3}(-[0-9]{3})?$/;
-const dniRegex = /^[0-9]{13}$/;
-const rtnRegex = /^[0-9]{13,14}$/;
+// DNI (persona natural) = 13 dígitos. RTN (persona jurídica/natural fiscal)
+// = 13 o 14 dígitos. La BD AMDC almacena ambos en TXT_IDENTIFICACION sin
+// distinguir formato, así que aceptamos cualquiera de los dos.
+const dniRtnRegex = /^[0-9]{13,14}$/;
 const icsRegex = /^[0-9A-Za-z-]+$/;
 
 function optionalPattern(pattern: RegExp, message: string, maxLen = 32) {
@@ -20,10 +22,14 @@ export const consultaECSchema = z
       "Formato esperado: NN-NNNN-NNN (ej. 13-0739-007)",
       20,
     ),
-    dni: optionalPattern(dniRegex, "El DNI debe tener 13 dígitos numéricos", 14),
+    dni: optionalPattern(
+      dniRtnRegex,
+      "DNI o RTN debe tener 13 o 14 dígitos numéricos",
+      14,
+    ),
   })
   .refine((d) => !!(d.claveCatastral || d.dni), {
-    message: "Ingresa la clave catastral o el DNI",
+    message: "Ingresa la clave catastral, DNI o RTN",
     path: ["claveCatastral"],
   });
 
@@ -37,7 +43,7 @@ export const consultaICSSchema = z
       20,
     ),
     dni: optionalPattern(
-      rtnRegex,
+      dniRtnRegex,
       "DNI o RTN debe tener 13 o 14 dígitos numéricos",
       14,
     ),

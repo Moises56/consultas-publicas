@@ -230,7 +230,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
           <TabsContent value="ec" className="space-y-7">
             <p className="text-sm leading-relaxed text-muted-foreground">
               Ingresa <strong>uno de los dos campos</strong>: la clave catastral
-              de tu inmueble o tu número de identidad.
+              de tu inmueble o tu DNI / RTN.
             </p>
             <form onSubmit={onSubmitEC} noValidate className="space-y-6">
               <FieldRow
@@ -254,8 +254,8 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
 
               <FieldRow
                 id="ec-dni"
-                label="Número de identidad (DNI)"
-                hint="13 dígitos numéricos, sin guiones"
+                label="DNI o RTN"
+                hint="13 dígitos para DNI · 14 dígitos para RTN — sin guiones"
                 error={ecForm.formState.errors.dni?.message}
               >
                 <Input
@@ -263,7 +263,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   autoComplete="off"
-                  placeholder="0000000000000"
+                  placeholder="00000000000000"
                   className="h-12 rounded-lg border-[color:var(--paper-deep)] bg-white text-[15px] font-medium tracking-tight shadow-sm focus-visible:border-[color:var(--brand-500)] focus-visible:ring-[color:var(--brand-500)]/15"
                   aria-invalid={!!ecForm.formState.errors.dni}
                   {...ecForm.register("dni")}

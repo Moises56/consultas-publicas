@@ -206,7 +206,7 @@ function Servicios() {
             tag="Inmuebles"
             icon={<Building2 className="size-5" />}
             title="Bienes Inmuebles"
-            description="Consulta por clave catastral o número de identidad. El detalle por año incluye impuesto, tren de aseo, bomberos y recargos."
+            description="Consulta por clave catastral, DNI o RTN del propietario. El detalle por año incluye impuesto, tren de aseo, bomberos y recargos."
             tone="brand"
           />
           <ServicioCard

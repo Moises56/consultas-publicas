@@ -62,9 +62,9 @@ export function HeroAnimated({ defaultTipo }: HeroAnimatedProps) {
 
   const sub =
     defaultTipo === "ics"
-      ? "Identifícate con tu código ICS, DNI o RTN. Verás los totales en pantalla y descargarás el PDF oficial."
+      ? "Identifica tu negocio con el código ICS. Verás los totales en pantalla y descargarás el PDF oficial."
       : defaultTipo === "ec"
-        ? "Identifícate con la clave catastral, DNI o RTN. El saldo se calcula al instante."
+        ? "Identifica tu inmueble con la clave catastral. El saldo se calcula al instante."
         : "Bienes Inmuebles e Industria y Comercio. Sin filas, sin contraseña, sin descargar nada.";
 
   return (

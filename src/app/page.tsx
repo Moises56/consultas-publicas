@@ -208,7 +208,7 @@ function Servicios() {
             tag="Inmuebles"
             icon={<Building2 className="size-5" />}
             title="Bienes Inmuebles"
-            description="Consulta por clave catastral, DNI o RTN del propietario. El detalle por año incluye impuesto, tren de aseo, bomberos y recargos."
+            description="Consulta por clave catastral del inmueble. El detalle por año incluye impuesto, tren de aseo, bomberos y recargos."
             tone="brand"
           />
           <ServicioCard
@@ -217,7 +217,7 @@ function Servicios() {
             tag="Negocios"
             icon={<FileText className="size-5" />}
             title="Industria y Comercio"
-            description="Consulta por código ICS, RTN o número de identidad del propietario. Visualiza el desglose y descarga el PDF oficial."
+            description="Consulta por código ICS de tu negocio. Visualiza el desglose y descarga el PDF oficial."
             tone="gold"
           />
         </div>
@@ -310,7 +310,7 @@ function ComoFunciona() {
     {
       step: "01",
       title: "Identifica",
-      copy: "Ingresa la clave catastral, código ICS, RTN o número de identidad. La página valida los datos de forma segura.",
+      copy: "Ingresa la clave catastral del inmueble o el código ICS de tu negocio. La página valida los datos de forma segura.",
     },
     {
       step: "02",

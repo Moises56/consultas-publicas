@@ -74,16 +74,8 @@ export async function POST(req: NextRequest) {
 
   const upstreamBody =
     payload.tipo === "ec"
-      ? {
-          ...(payload.claveCatastral
-            ? { claveCatastral: payload.claveCatastral }
-            : {}),
-          ...(payload.dni ? { dni: payload.dni } : {}),
-        }
-      : {
-          ...(payload.ics ? { ics: payload.ics } : {}),
-          ...(payload.dni ? { dni: payload.dni } : {}),
-        };
+      ? { claveCatastral: payload.claveCatastral }
+      : { ics: payload.ics };
 
   const ip = clientIp(req);
   const browserOrigin = req.headers.get("origin") ?? req.nextUrl.origin;

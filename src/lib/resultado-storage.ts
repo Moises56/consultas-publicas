@@ -5,7 +5,6 @@ export const RESULTADO_STORAGE_KEY = "amdc:resultado";
 export interface StoredQuery {
   tipo: TipoConsulta;
   claveCatastral?: string;
-  dni?: string;
   ics?: string;
 }
 

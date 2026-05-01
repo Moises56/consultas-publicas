@@ -39,12 +39,8 @@ function downloadBlob(blob: Blob, filename: string) {
 function buildFilename(query: StoredQuery): string {
   const id =
     query.tipo === "ec"
-      ? query.claveCatastral?.replace(/[^0-9-]/g, "") ||
-        query.dni?.replace(/[^0-9]/g, "") ||
-        "consulta"
-      : query.ics?.replace(/[^0-9A-Za-z-]/g, "") ||
-        query.dni?.replace(/[^0-9]/g, "") ||
-        "consulta";
+      ? query.claveCatastral?.replace(/[^0-9-]/g, "") || "consulta"
+      : query.ics?.replace(/[^0-9A-Za-z-]/g, "") || "consulta";
   const tipoTag = query.tipo === "ec" ? "EC" : "ICS";
   return `Estado-de-Cuenta-${tipoTag}-${id}.pdf`;
 }
@@ -68,13 +64,11 @@ export function PdfDownloadButton({ query }: PdfDownloadButtonProps) {
       const res = await fetch("/api/pdf", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          tipo: query.tipo,
-          token,
-          claveCatastral: query.claveCatastral,
-          dni: query.dni,
-          ics: query.ics,
-        }),
+        body: JSON.stringify(
+          query.tipo === "ec"
+            ? { tipo: "ec", token, claveCatastral: query.claveCatastral }
+            : { tipo: "ics", token, ics: query.ics },
+        ),
         cache: "no-store",
       });
 

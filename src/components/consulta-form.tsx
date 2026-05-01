@@ -50,13 +50,13 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
 
   const ecForm = useForm<ConsultaECInput>({
     resolver: zodResolver(consultaECSchema),
-    defaultValues: { claveCatastral: "", dni: "" },
+    defaultValues: { claveCatastral: "" },
     mode: "onSubmit",
   });
 
   const icsForm = useForm<ConsultaICSInput>({
     resolver: zodResolver(consultaICSSchema),
-    defaultValues: { ics: "", dni: "" },
+    defaultValues: { ics: "" },
     mode: "onSubmit",
   });
 
@@ -72,7 +72,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
         not_found:
           "No encontramos un estado de cuenta con esos datos. Verifica e intenta de nuevo.",
         validation:
-          "Revisa los campos. Asegúrate de ingresar la clave o identidad correctamente.",
+          "Revisa los campos. Asegúrate de ingresar la clave catastral o el código ICS correctamente.",
         server_error:
           "Tuvimos un problema al consultar. Intenta nuevamente en unos minutos.",
         network: "No pudimos conectar con el servicio. Revisa tu conexión.",
@@ -95,15 +95,13 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
   const onSubmitEC = ecForm.handleSubmit((values) => {
     const query: StoredQuery = {
       tipo: "ec",
-      claveCatastral: values.claveCatastral || undefined,
-      dni: values.dni || undefined,
+      claveCatastral: values.claveCatastral,
     };
     lastQueryRef.current = query;
     startTransition(async () => {
       const response = await consultarEstadoCuenta({
         tipo: "ec",
-        claveCatastral: query.claveCatastral,
-        dni: query.dni,
+        claveCatastral: values.claveCatastral,
       });
       handleResult(response);
     });
@@ -112,26 +110,20 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
   const onSubmitICS = icsForm.handleSubmit((values) => {
     const query: StoredQuery = {
       tipo: "ics",
-      ics: values.ics || undefined,
-      dni: values.dni || undefined,
+      ics: values.ics,
     };
     lastQueryRef.current = query;
     startTransition(async () => {
       const response = await consultarEstadoCuenta({
         tipo: "ics",
-        ics: query.ics,
-        dni: query.dni,
+        ics: values.ics,
       });
       handleResult(response);
     });
   });
 
-  const ecFieldError =
-    ecForm.formState.errors.claveCatastral?.message ??
-    ecForm.formState.errors.dni?.message;
-  const icsFieldError =
-    icsForm.formState.errors.ics?.message ??
-    icsForm.formState.errors.dni?.message;
+  const ecFieldError = ecForm.formState.errors.claveCatastral?.message;
+  const icsFieldError = icsForm.formState.errors.ics?.message;
 
   return (
     <div className="relative overflow-hidden rounded-3xl bg-white ring-paper">
@@ -155,7 +147,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
             ¿Qué deseas consultar hoy?
           </h2>
           <p className="max-w-prose text-sm leading-relaxed text-ink-soft md:text-[15px]">
-            Elige el servicio y proporciona uno de los identificadores. Tu
+            Elige el servicio e ingresa el identificador correspondiente. Tu
             estado de cuenta se mostrará en pantalla con la opción de descargar
             el PDF oficial.
           </p>
@@ -229,8 +221,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
 
           <TabsContent value="ec" className="space-y-7">
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Ingresa <strong>uno de los dos campos</strong>: la clave catastral
-              de tu inmueble o tu DNI / RTN.
+              Ingresa la <strong>clave catastral</strong> del inmueble.
             </p>
             <form onSubmit={onSubmitEC} noValidate className="space-y-6">
               <FieldRow
@@ -250,26 +241,6 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
                 />
               </FieldRow>
 
-              <Divider />
-
-              <FieldRow
-                id="ec-dni"
-                label="DNI o RTN"
-                hint="13 dígitos para DNI · 14 dígitos para RTN — sin guiones"
-                error={ecForm.formState.errors.dni?.message}
-              >
-                <Input
-                  id="ec-dni"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  autoComplete="off"
-                  placeholder="00000000000000"
-                  className="h-12 rounded-lg border-[color:var(--paper-deep)] bg-white text-[15px] font-medium tracking-tight shadow-sm focus-visible:border-[color:var(--brand-500)] focus-visible:ring-[color:var(--brand-500)]/15"
-                  aria-invalid={!!ecForm.formState.errors.dni}
-                  {...ecForm.register("dni")}
-                />
-              </FieldRow>
-
               {ecFieldError && (
                 <Alert variant="destructive">
                   <AlertTitle>Revisa los datos</AlertTitle>
@@ -283,8 +254,7 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
 
           <TabsContent value="ics" className="space-y-7">
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Ingresa <strong>uno de los dos campos</strong>: el código ICS de
-              tu negocio o tu número de identidad / RTN.
+              Ingresa el <strong>código ICS</strong> de tu negocio.
             </p>
             <form onSubmit={onSubmitICS} noValidate className="space-y-6">
               <FieldRow
@@ -301,26 +271,6 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
                   className="h-12 rounded-lg border-[color:var(--paper-deep)] bg-white text-[15px] font-medium tracking-tight shadow-sm focus-visible:border-[color:var(--brand-500)] focus-visible:ring-[color:var(--brand-500)]/15"
                   aria-invalid={!!icsForm.formState.errors.ics}
                   {...icsForm.register("ics")}
-                />
-              </FieldRow>
-
-              <Divider />
-
-              <FieldRow
-                id="ics-dni"
-                label="DNI o RTN"
-                hint="13 dígitos para DNI · 14 dígitos para RTN"
-                error={icsForm.formState.errors.dni?.message}
-              >
-                <Input
-                  id="ics-dni"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  autoComplete="off"
-                  placeholder="00000000000000"
-                  className="h-12 rounded-lg border-[color:var(--paper-deep)] bg-white text-[15px] font-medium tracking-tight shadow-sm focus-visible:border-[color:var(--brand-500)] focus-visible:ring-[color:var(--brand-500)]/15"
-                  aria-invalid={!!icsForm.formState.errors.dni}
-                  {...icsForm.register("dni")}
                 />
               </FieldRow>
 
@@ -345,18 +295,6 @@ export function ConsultaForm({ defaultTipo = "ec" }: ConsultaFormProps) {
           </p>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Divider() {
-  return (
-    <div className="flex items-center gap-5 py-2" aria-hidden>
-      <span className="h-px flex-1 bg-[color:var(--paper-deep)]" />
-      <span className="font-display text-base italic leading-none text-ink-soft/55">
-        o bien
-      </span>
-      <span className="h-px flex-1 bg-[color:var(--paper-deep)]" />
     </div>
   );
 }

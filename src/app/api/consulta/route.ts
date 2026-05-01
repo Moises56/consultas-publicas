@@ -84,11 +84,9 @@ export async function POST(req: NextRequest) {
   );
 
   if (payload.tipo === "ec") {
-    if (payload.claveCatastral) url.searchParams.set("claveCatastral", payload.claveCatastral);
-    if (payload.dni) url.searchParams.set("dni", payload.dni);
+    url.searchParams.set("claveCatastral", payload.claveCatastral);
   } else {
-    if (payload.ics) url.searchParams.set("ics", payload.ics);
-    if (payload.dni) url.searchParams.set("dni", payload.dni);
+    url.searchParams.set("ics", payload.ics);
   }
 
   const sameOrigin = enforceSameOrigin(req);
@@ -156,7 +154,7 @@ export async function POST(req: NextRequest) {
       return jsonError(
         upstream.status,
         "validation",
-        "Revisa los campos. Asegúrate de ingresar la clave o identidad correctamente.",
+        "Revisa los campos. Asegúrate de ingresar la clave catastral o el código ICS correctamente.",
       );
     case 429:
       return jsonError(

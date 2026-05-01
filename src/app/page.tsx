@@ -9,12 +9,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AmnistiaAlert } from "@/components/amnistia-alert";
 
 const amnistiaActiva = process.env.NEXT_PUBLIC_AMNISTIA_ACTIVA === "true";
 
 export default function Home() {
   return (
     <>
+      <AmnistiaAlert />
       <Hero />
       <Servicios />
       <ComoFunciona />
